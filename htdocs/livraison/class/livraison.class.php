@@ -30,9 +30,12 @@
 require_once DOL_DOCUMENT_ROOT.'/core/class/commonobject.class.php';
 require_once DOL_DOCUMENT_ROOT.'/expedition/class/expedition.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/stock/class/mouvementstock.class.php';
-if (! empty($conf->propal->enabled))   require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
-if (! empty($conf->commande->enabled)) require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
-
+if (! empty($conf->propal->enabled)){
+	require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
+}
+if (! empty($conf->commande->enabled)){
+	require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
+}
 
 /**
  *  Class to manage receptions
@@ -111,8 +114,9 @@ class Livraison extends CommonObject
 
 		dol_syslog("Livraison::create");
 
-		if (empty($this->model_pdf)) $this->model_pdf=$conf->global->LIVRAISON_ADDON_PDF;
-
+		if (empty($this->model_pdf)){
+			$this->model_pdf=$conf->global->LIVRAISON_ADDON_PDF;
+		}
 		$error = 0;
 
         $now=dol_now();
@@ -184,7 +188,9 @@ class Livraison extends CommonObject
 				for ($i = 0; $i < $num; $i++)
 				{
 					$origin_id=$this->lines[$i]->origin_line_id;
-					if (! $origin_id) $origin_id=$this->lines[$i]->commande_ligne_id;	// For backward compatibility
+					if (! $origin_id){
+						$origin_id=$this->lines[$i]->commande_ligne_id;	// For backward compatibility
+					}
 
 					if (! $this->create_line($origin_id, $this->lines[$i]->qty, $this->lines[$i]->fk_product, $this->lines[$i]->description))
 					{
@@ -202,7 +208,7 @@ class Livraison extends CommonObject
 
 					if (! $conf->expedition_bon->enabled)
 					{
-						// TODO uniformiser les statuts
+						
 						$ret = $this->setStatut(2, $this->origin_id, $this->origin);
 						if (! $ret)
 						{
@@ -330,7 +336,9 @@ class Livraison extends CommonObject
 				$this->label_incoterms = $obj->label_incoterms;
 				$this->db->free($result);
 
-				if ($this->statut == 0) $this->brouillon = 1;
+				if ($this->statut == 0){
+					$this->brouillon = 1;
+				}
 
 				// Retreive all extrafields
 				// fetch optionals attributes and labels
@@ -443,7 +451,9 @@ class Livraison extends CommonObject
 			        {
 			            // Call trigger
 			            $result=$this->call_trigger('DELIVERY_VALIDATE', $user);
-			            if ($result < 0) $error++;
+			            if ($result < 0){
+					    $error++;
+				    }
 			            // End call triggers
 			        }
 
@@ -592,8 +602,12 @@ class Livraison extends CommonObject
 			}
 		}
 
-		if (! $error) return 1;
-		else return -1;
+		if (! $error){
+			return 1;
+		}
+		else{
+			return -1;
+		}
 	}
 
 
@@ -661,7 +675,9 @@ class Livraison extends CommonObject
 		{
 			// Delete linked object
 			$res = $this->deleteObjectLinked();
-			if ($res < 0) $error++;
+			if ($res < 0){
+				$error++;
+			}
 
 			if (! $error)
 			{
@@ -679,15 +695,12 @@ class Livraison extends CommonObject
 						$file = $dir . '/' . $ref . '.pdf';
 						if (file_exists($file))
 						{
-							if (!dol_delete_file($file))
-							{
+							if (!dol_delete_file($file)){
 								return 0;
 							}
 						}
-						if (file_exists($dir))
-						{
-							if (!dol_delete_dir($dir))
-							{
+						if (file_exists($dir)){
+							if (!dol_delete_dir($dir)){
 								$this->error=$langs->trans("ErrorCanNotDeleteDir", $dir);
 								return 0;
 							}
@@ -745,20 +758,26 @@ class Livraison extends CommonObject
 
 		$url=DOL_URL_ROOT.'/livraison/card.php?id='.$this->id;
 
-        //if ($option !== 'nolink')
-        //{
         	// Add param to save lastsearch_values or not
         	$add_save_lastsearch_values=($save_lastsearch_value == 1 ? 1 : 0);
-        	if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) $add_save_lastsearch_values=1;
-        	if ($add_save_lastsearch_values) $url.='&save_lastsearch_values=1';
-        //}
+        	if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])){
+			$add_save_lastsearch_values=1;
+		}
+        	if ($add_save_lastsearch_values){
+			$url.='&save_lastsearch_values=1';
+		}
+      
 
 
         $linkstart = '<a href="'.$url.'" title="'.dol_escape_htmltag($label, 1).'" class="classfortooltip">';
 		$linkend='</a>';
 
-		if ($withpicto) $result.=($linkstart.img_object($label, $picto, 'class="classfortooltip"').$linkend);
-		if ($withpicto && $withpicto != 2) $result.=' ';
+		if ($withpicto)
+			$result.=($linkstart.img_object($label, $picto, 'class="classfortooltip"').$linkend);
+    }
+		if ($withpicto && $withpicto != 2){
+			$result.=' ';
+		}
 		$result.=$linkstart.$this->ref.$linkend;
 		return $result;
 	}
@@ -850,7 +869,6 @@ class Livraison extends CommonObject
 		if (empty($this->labelStatus) || empty($this->labelStatusShort))
 		{
 			global $langs;
-			//$langs->load("mymodule");
 			$this->labelStatus[-1] = $langs->trans('StatusDeliveryCanceled');
 			$this->labelStatus[0] = $langs->trans('StatusDeliveryDraft');
 			$this->labelStatus[1] = $langs->trans('StatusDeliveryValidated');
@@ -860,8 +878,12 @@ class Livraison extends CommonObject
 		}
 
 		$statusType = 'status0';
-		if ($status == -1) $statusType = 'status5';
-		if ($status == 1) $statusType = 'status4';
+		if ($status == -1){
+			$statusType = 'status5';
+		}
+		if ($status == 1){
+			$statusType = 'status4';
+		}
 
 		return dolGetStatus($this->labelStatus[$status], $this->labelStatusShort[$status], '', $statusType, $mode);
 	}
@@ -933,10 +955,8 @@ class Livraison extends CommonObject
 	{
 		global $langs;
 
-		// Get the linked object
+		
 		$this->fetchObjectLinked('', '', $this->id, $this->element);
-		//var_dump($this->linkedObjectIds);
-		// Get the product ref and qty in source
 		$sqlSourceLine = "SELECT st.rowid, st.description, st.qty";
 		$sqlSourceLine.= ", p.ref, p.label";
 		$sqlSourceLine.= " FROM ".MAIN_DB_PREFIX.$this->linkedObjectIds[0]['type']."det as st";
