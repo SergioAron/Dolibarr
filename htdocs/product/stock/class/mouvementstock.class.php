@@ -123,11 +123,14 @@ class MouvementStock extends CommonObject
 		dol_syslog(get_class($this)."::_create start userid=$user->id, fk_product=$fk_product, warehouse_id=$entrepot_id, qty=$qty, type=$type, price=$price, label=$label, inventorycode=$inventorycode, datem=".$datem.", eatby=".$eatby.", sellby=".$sellby.", batch=".$batch.", skip_batch=".$skip_batch);
 
 		// Clean parameters
-		if (empty($price)) $price=0;
+		if (empty($price)){
+			$price=0;}
 		$now=(! empty($datem) ? $datem : dol_now());
 
 		// Check parameters
-		if (empty($fk_product)) return 0;
+		if (empty($fk_product)){
+			return 0;
+		}
 		if ($eatby < 0)
 		{
 			$this->errors[]='ErrorBadValueForParameterEatBy';
@@ -308,8 +311,9 @@ class MouvementStock extends CommonObject
 
 		// Define if we must make the stock change (If product type is a service or if stock is used also for services)
 		$movestock=0;
-		if ($product->type != Product::TYPE_SERVICE || ! empty($conf->global->STOCK_SUPPORTS_SERVICES)) $movestock=1;
-
+		if ($product->type != Product::TYPE_SERVICE || ! empty($conf->global->STOCK_SUPPORTS_SERVICES)){
+			$movestock=1;
+		}
 		// Check if stock is enough when qty is < 0
 		// Note that qty should be > 0 with type 0 or 3, < 0 with type 1 or 2.
 		if ($movestock && $qty < 0 && empty($conf->global->STOCK_ALLOW_NEGATIVE_TRANSFER))
@@ -320,9 +324,13 @@ class MouvementStock extends CommonObject
     		    $qtyisnotenough=0;
     		    foreach($product->stock_warehouse[$entrepot_id]->detail_batch as $batchcursor => $prodbatch)
     		    {
-    		        if ($batch != $batchcursor) continue;
+    		        if ($batch != $batchcursor){
+				continue;
+			}
     		        $foundforbatch=1;
-    		        if ($prodbatch->qty < abs($qty)) $qtyisnotenough = $prodbatch->qty;
+    		        if ($prodbatch->qty < abs($qty)){
+				$qtyisnotenough = $prodbatch->qty;
+			}
         		    break;
     		    }
     		    if (! $foundforbatch || $qtyisnotenough)
@@ -357,7 +365,9 @@ class MouvementStock extends CommonObject
 			if(!empty($this->origin)) {			// This is set by caller for tracking reason
 				$origintype = $this->origin->element;
 				$fk_origin = $this->origin->id;
-				if ($origintype == 'project') $fk_project = $fk_origin;
+				if ($origintype == 'project'){
+					fk_project = $fk_origin;
+				}
 				else
 				{
 					$res = $this->origin->fetch($fk_origin);
