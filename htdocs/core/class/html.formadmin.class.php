@@ -65,8 +65,9 @@ class FormAdmin
 		// phpcs:enable
 		global $conf, $langs;
 
-		if (!empty($conf->global->MAIN_DEFAULT_LANGUAGE_FILTER)) $filter[$conf->global->MAIN_DEFAULT_LANGUAGE_FILTER] = 1;
-
+		if (!empty($conf->global->MAIN_DEFAULT_LANGUAGE_FILTER)){
+			$filter[$conf->global->MAIN_DEFAULT_LANGUAGE_FILTER] = 1;
+		}
 		$langs_available=$langs->get_available_languages(DOL_DOCUMENT_ROOT, 12);
 
 		$out='';
@@ -75,16 +76,24 @@ class FormAdmin
 		if ($showempty && ! $multiselect)
 		{
 			$out.= '<option value="0"';
-			if ($selected == '') $out.= ' selected';
+			if ($selected == ''){
+				$out.= ' selected';
+			}
 			$out.= '>';
-			if ($showempty != '1') $out.=$showempty;
-			else $out.='&nbsp;';
+			if ($showempty != '1'){
+				$out.=$showempty;
+			}
+			else {
+				$out.='&nbsp;';
+			}
 			$out.='</option>';
 		}
 		if ($showauto)
 		{
 			$out.= '<option value="auto"';
-			if ($selected == 'auto') $out.= ' selected';
+			if ($selected == 'auto'){
+				out.= ' selected';
+			}
 			$out.= '>'.$langs->trans("AutoDetectLang").'</option>';
 		}
 
@@ -93,14 +102,19 @@ class FormAdmin
 		foreach ($langs_available as $key => $value)
 		{
 			$valuetoshow=$value;
-			if ($showcode == 1) $valuetoshow=$key.' - '.$value;
-			if ($showcode == 2) $valuetoshow=$value.' ('.$key.')';
-
-			if ($filter && is_array($filter) && array_key_exists($key, $filter))
-			{
+			if ($showcode == 1){
+				$valuetoshow=$key.' - '.$value;
+			}
+			if ($showcode == 2){
+				$valuetoshow=$value.' ('.$key.')';
+			}
+			if ($filter && is_array($filter){
+			    && array_key_exists($key, $filter))
+			}
+			    }
 				continue;
 			}
-			elseif ($selected == $key)
+			elseif($selected == $key)
 			{
 				$out.= '<option value="'.$key.'" selected>'.$valuetoshow.'</option>';
 			}
@@ -140,15 +154,16 @@ class FormAdmin
 
 
         // Check parameters
-        if (! is_array($dirmenuarray)) return -1;
-
+        if (! is_array($dirmenuarray)){
+		return -1;
+	}
 		$menuarray=array();
         foreach ($conf->file->dol_document_root as $dirroot)
         {
             foreach($dirmenuarray as $dirtoscan)
             {
                 $dir=$dirroot.$dirtoscan;
-                //print $dir.'<br>';
+                
                 if (is_dir($dir))
                 {
     	            $handle=opendir($dir);
@@ -246,10 +261,18 @@ class FormAdmin
 	        				if (is_file($dir."/".$file) && substr($file, 0, 1) <> '.' && substr($file, 0, 3) <> 'CVS')
 	        				{
 	        					$filelib=preg_replace('/(_backoffice|_frontoffice)?\.php$/i', '', $file);
-	        					if (preg_match('/^index/i', $filelib)) continue;
-	        					if (preg_match('/^default/i', $filelib)) continue;
-	        					if (preg_match('/^empty/i', $filelib)) continue;
-	        					if (preg_match('/\.lib/i', $filelib)) continue;
+	        					if (preg_match('/^index/i', $filelib)){
+								continue;
+							}
+	        					if (preg_match('/^default/i', $filelib)){
+								continue;
+							}
+	        					if (preg_match('/^empty/i', $filelib)){
+								continue;
+							}
+	        					if (preg_match('/\.lib/i', $filelib)){
+								continue;
+							}
 	        					if (empty($conf->global->MAIN_FEATURES_LEVEL) && in_array($file, $expdevmenu)) continue;
 
 	        					$menuarray[$filelib]=1;
@@ -277,8 +300,12 @@ class FormAdmin
 				print '	selected';
 			}
 			print '>';
-			if ($key == 'all') print $langs->trans("AllMenus");
-			else print $key;
+			if ($key == 'all'){
+				rint $langs->trans("AllMenus");
+			}
+			else{
+				print $key;
+			}
 			print '</option>'."\n";
 		}
 		print '</select>';
@@ -330,7 +357,9 @@ class FormAdmin
 		);
         foreach ($arraytz as $lib => $gmt) {
             print '<option value="'.$lib.'"';
-            if ($selected == $lib || $selected == $gmt) print ' selected';
+            if ($selected == $lib || $selected == $gmt){
+		    print ' selected';
+	    }
             print '>'.$gmt.'</option>'."\n";
         }
         print '</select>';
@@ -358,7 +387,9 @@ class FormAdmin
 		$sql = "SELECT code, label, width, height, unit";
 		$sql.= " FROM ".MAIN_DB_PREFIX."c_paper_format";
 		$sql.= " WHERE active=1";
-        if ($filter) $sql.=" AND code LIKE '%".$this->db->escape($filter)."%'";
+        if ($filter){
+		$sql.=" AND code LIKE '%".$this->db->escape($filter)."%'";
+	}
 
         $resql=$this->db->query($sql);
         if ($resql)
@@ -386,7 +417,9 @@ class FormAdmin
 		if ($showempty)
 		{
 			$out.= '<option value=""';
-			if ($selected == '') $out.= ' selected';
+			if ($selected == ''){
+				$out.= ' selected';
+			}
 			$out.= '>&nbsp;</option>';
 		}
 		foreach ($paperformat as $key => $value)
