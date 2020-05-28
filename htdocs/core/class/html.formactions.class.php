@@ -127,8 +127,11 @@ class FormActions
         }
         if (!empty($conf->use_javascript_ajax) || $onlyselect)
         {
-        	//var_dump($selected);
-        	if ($selected == 'done') $selected = '100';
+        	
+        	if ($selected == 'done'){
+			$selected = '100';
+		}
+		
             print '<select '.($canedit ? '' : 'disabled ').'name="'.$htmlname.'" id="select'.$htmlname.'" class="flat'.($morecss ? ' '.$morecss : '').'">';
             if ($showempty) print '<option value=""'.($selected == '' ? ' selected' : '').'></option>';
             foreach ($listofstatus as $key => $val)
@@ -140,7 +143,9 @@ class FormActions
                 }
             }
             print '</select>';
-            if ($selected == 0 || $selected == 100) $canedit = 0;
+            if ($selected == 0 || $selected == 100){
+		    $canedit = 0;
+	}
 
             if (empty($onlyselect))
             {
@@ -179,29 +184,56 @@ class FormActions
         $sortorder = 'DESC,DESC';
 
         $listofactions = ActionComm::getActions($this->db, $socid, $object->id, $typeelement, '', $sortfield, $sortorder, ($max ? ($max + 1) : 0));
-        if (!is_array($listofactions)) dol_print_error($this->db, 'FailedToGetActions');
+        if (!is_array($listofactions)){
+		dol_print_error($this->db, 'FailedToGetActions');
+	}
 
         $num = count($listofactions);
         if ($num || $forceshowtitle)
         {
-        	if ($typeelement == 'invoice')               $title = $langs->trans('ActionsOnBill');
-        	elseif ($typeelement == 'invoice_supplier' || $typeelement == 'supplier_invoice') $title = $langs->trans('ActionsOnBill');
-        	elseif ($typeelement == 'propal')            $title = $langs->trans('ActionsOnPropal');
-        	elseif ($typeelement == 'supplier_proposal') $title = $langs->trans('ActionsOnSupplierProposal');
-        	elseif ($typeelement == 'order')             $title = $langs->trans('ActionsOnOrder');
-        	elseif ($typeelement == 'order_supplier' || $typeelement == 'supplier_order')   $title = $langs->trans('ActionsOnOrder');
-        	elseif ($typeelement == 'shipping')          $title = $langs->trans('ActionsOnShipping');
-            elseif ($typeelement == 'fichinter')         $title = $langs->trans('ActionsOnFicheInter');
-            elseif ($typeelement == 'project')           $title = $langs->trans('LatestLinkedEvents', $max ? $max : '');
-            elseif ($typeelement == 'task')              $title = $langs->trans('LatestLinkedEvents', $max ? $max : '');
-            elseif ($typeelement == 'member')            $title = $langs->trans('LatestLinkedEvents', $max ? $max : '');
-            else $title = $langs->trans("LatestLinkedEvents", $max ? $max : '');
+        	if ($typeelement == 'invoice'){
+			title = $langs->trans('ActionsOnBill');
+		}
+        	elseif ($typeelement == 'invoice_supplier' || $typeelement == 'supplier_invoice'){
+			$title = $langs->trans('ActionsOnBill');
+		}
+        	elseif ($typeelement == 'propal') {
+			title = $langs->trans('ActionsOnPropal');
+		}
+        	elseif ($typeelement == 'supplier_proposal'){
+			$title = $langs->trans('ActionsOnSupplierProposal');
+		}
+        	elseif ($typeelement == 'order') {
+			$title = $langs->trans('ActionsOnOrder');
+		}
+        	elseif ($typeelement == 'order_supplier' || $typeelement == 'supplier_order'){
+			$title = $langs->trans('ActionsOnOrder');
+		}
+        	elseif ($typeelement == 'shipping'){
+			$title = $langs->trans('ActionsOnShipping');
+		}
+            elseif ($typeelement == 'fichinter'){
+		    $title = $langs->trans('ActionsOnFicheInter');
+	    }
+            elseif ($typeelement == 'project') {
+		    $title = $langs->trans('LatestLinkedEvents', $max ? $max : '');
+	    }
+            elseif ($typeelement == 'task') {
+		    $title = $langs->trans('LatestLinkedEvents', $max ? $max : '');
+	    }
+            elseif ($typeelement == 'member'){
+		    $title = $langs->trans('LatestLinkedEvents', $max ? $max : '');
+	    }
+            else {
+		    $title = $langs->trans("LatestLinkedEvents", $max ? $max : '');
+	    }
 
             $urlbacktopage = $_SERVER['PHP_SELF'].'?id='.$object->id.($moreparambacktopage ? '&'.$moreparambacktopage : '');
 
             $projectid = $object->fk_project;
-            if ($typeelement == 'project') $projectid = $object->id;
-
+            if ($typeelement == 'project'){
+		    $projectid = $object->id;
+	    }
             $newcardbutton = '';
 			if (!empty($conf->agenda->enabled))
 			{
@@ -265,14 +297,28 @@ class FormActions
 					$imgpicto = '';
 					if (!empty($conf->global->AGENDA_USE_EVENT_TYPE))
 					{
-						if ($action->type_picto) $imgpicto = img_picto('', $action->type_picto);
+						if ($action->type_picto){
+							$imgpicto = img_picto('', $action->type_picto);
+						}
 						else {
-							if ($action->type_code == 'AC_RDV')       $imgpicto = img_picto('', 'object_group', '', false, 0, 0, '', 'paddingright').' ';
-							elseif ($action->type_code == 'AC_TEL')   $imgpicto = img_picto('', 'object_phoning', '', false, 0, 0, '', 'paddingright').' ';
-							elseif ($action->type_code == 'AC_FAX')   $imgpicto = img_picto('', 'object_phoning_fax', '', false, 0, 0, '', 'paddingright').' ';
-							elseif ($action->type_code == 'AC_EMAIL') $imgpicto = img_picto('', 'object_email', '', false, 0, 0, '', 'paddingright').' ';
-							elseif ($action->type_code == 'AC_INT')   $imgpicto = img_picto('', 'object_intervention', '', false, 0, 0, '', 'paddingright').' ';
-							elseif (!preg_match('/_AUTO/', $action->type_code)) $imgpicto = img_picto('', 'object_action', '', false, 0, 0, '', 'paddingright').' ';
+							if ($action->type_code == 'AC_RDV'){
+								{$imgpicto = img_picto('', 'object_group', '', false, 0, 0, '', 'paddingright').' ';
+								}
+							elseif ($action->type_code == 'AC_TEL'){
+								$imgpicto = img_picto('', 'object_phoning', '', false, 0, 0, '', 'paddingright').' ';
+							}
+							elseif ($action->type_code == 'AC_FAX'){
+								$imgpicto = img_picto('', 'object_phoning_fax', '', false, 0, 0, '', 'paddingright').' ';
+							}
+							elseif ($action->type_code == 'AC_EMAIL'){
+								$imgpicto = img_picto('', 'object_email', '', false, 0, 0, '', 'paddingright').' ';
+							}
+							elseif ($action->type_code == 'AC_INT'){
+								$imgpicto = img_picto('', 'object_intervention', '', false, 0, 0, '', 'paddingright').' ';
+							}
+							elseif (!preg_match('/_AUTO/', $action->type_code)){
+								$imgpicto = img_picto('', 'object_action', '', false, 0, 0, '', 'paddingright').' ';
+							}
 						}
 					}
 					print $imgpicto;
@@ -288,10 +334,14 @@ class FormActions
 		        		$tmpb = dol_getdate($action->datef);
 		        		if ($tmpa['mday'] == $tmpb['mday'] && $tmpa['mon'] == $tmpb['mon'] && $tmpa['year'] == $tmpb['year'])
 		        		{
-		        			if ($tmpa['hours'] != $tmpb['hours'] || $tmpa['minutes'] != $tmpb['minutes'] && $tmpa['seconds'] != $tmpb['seconds']) print '-'.dol_print_date($action->datef, 'hour', 'tzuserrel');
+		        			if ($tmpa['hours'] != $tmpb['hours'] || $tmpa['minutes'] != $tmpb['minutes'] && $tmpa['seconds'] != $tmpb['seconds']){
+							print '-'.dol_print_date($action->datef, 'hour', 'tzuserrel');
+					}
 		        		}
-		        		else print '-'.dol_print_date($action->datef, 'dayhour', 'tzuserrel');
+		        		else {
+						print '-'.dol_print_date($action->datef, 'dayhour', 'tzuserrel');
 	        		}
+				}
 	        		print '</td>';
 	        		print '<td class="right">';
         			print $action->getLibStatut(3);
@@ -337,8 +387,9 @@ class FormActions
         // phpcs:enable
         global $langs, $user, $form, $conf;
 
-        if (!is_object($form)) $form = new Form($this->db);
-
+        if (!is_object($form)){
+		$form = new Form($this->db);
+	}
         require_once DOL_DOCUMENT_ROOT.'/comm/action/class/cactioncomm.class.php';
         require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
         $caction = new CActionComm($this->db);
@@ -346,18 +397,23 @@ class FormActions
        	// Suggest a list with manual events or all auto events
        	$arraylist = $caction->liste_array(1, 'code', $excludetype, $onlyautoornot);
        	array_unshift($arraylist, '&nbsp;'); // Add empty line at start
-       	//asort($arraylist);
+       
 
-       	if ($selected == 'manual') $selected = 'AC_OTH';
-       	if ($selected == 'auto')   $selected = 'AC_OTH_AUTO';
-
-       	if (!empty($conf->global->AGENDA_ALWAYS_HIDE_AUTO)) unset($arraylist['AC_OTH_AUTO']);
-
+       	if ($selected == 'manual'){
+		$selected = 'AC_OTH';
+	}
+       	if ($selected == 'auto'){
+		$selected = 'AC_OTH_AUTO';
+	}
+       	if (!empty($conf->global->AGENDA_ALWAYS_HIDE_AUTO)){ 
+		unset($arraylist['AC_OTH_AUTO']);
+	}
        	$out = '';
 
 		if (!empty($multiselect))
 		{
-	        if (!is_array($selected) && !empty($selected)) $selected = explode(',', $selected);
+	        if (!is_array($selected) && !empty($selected)){
+			$selected = explode(',', $selected);
 			$out .= $form->multiselectarray($htmlname, $arraylist, $selected, 0, 0, 'centpercent', 0, 0);
 		}
 		else
@@ -370,8 +426,11 @@ class FormActions
             $out .= info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup").($hideinfohelp == -1 ? ". ".$langs->trans("YouCanSetDefaultValueInModuleSetup") : ''), 1);
         }
 
-        if ($nooutput) return $out;
-        else print $out;
+        if ($nooutput){
+		return $out;
+        else{
+		print $out;
+	}
         return '';
     }
 }
