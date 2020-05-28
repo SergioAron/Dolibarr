@@ -64,7 +64,7 @@ $cancel     = GETPOST('cancel', 'aZ09');
 $contextpage = GETPOST('contextpage', 'aZ') ?GETPOST('contextpage', 'aZ') : 'mocard'; // To manage different context of search
 $backtopage = GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
-//$lineid   = GETPOST('lineid', 'int');
+
 
 // Initialize technical objects
 $object = new Mo($db);
@@ -83,11 +83,13 @@ $search_all = trim(GETPOST("search_all", 'alpha'));
 $search = array();
 foreach ($object->fields as $key => $val)
 {
-	if (GETPOST('search_'.$key, 'alpha')) $search[$key] = GETPOST('search_'.$key, 'alpha');
+	if (GETPOST('search_'.$key, 'alpha')){
+		$search[$key] = GETPOST('search_'.$key, 'alpha');
 }
 
-if (empty($action) && empty($id) && empty($ref)) $action = 'view';
-
+if (empty($action) && empty($id) && empty($ref)){
+	$action = 'view';
+}
 // Load object
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php'; // Must be include, not include_once.
 
@@ -105,7 +107,6 @@ if (GETPOST('fk_bom', 'int'))
 }
 
 // Security check - Protection if external user
-//if ($user->socid > 0) accessforbidden();
 //if ($user->socid > 0) $socid = $user->socid;
 //$isdraft = (($object->statut == $object::STATUS_DRAFT) ? 1 : 0);
 //$result = restrictedArea($user, 'mrp', $object->id, '', '', 'fk_soc', 'rowid', $isdraft);
@@ -123,7 +124,9 @@ $upload_dir = $conf->mrp->multidir_output[isset($object->entity) ? $object->enti
 
 $parameters = array();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
-if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+if ($reshook < 0){
+	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+}
 
 if (empty($reshook))
 {
@@ -133,8 +136,12 @@ if (empty($reshook))
 
     if (empty($backtopage) || ($cancel && empty($id))) {
     	if (empty($backtopage) || ($cancel && strpos($backtopage, '__ID__'))) {
-	    	if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)) $backtopage = $backurlforlist;
-    		else $backtopage = DOL_URL_ROOT.'/mrp/mo_card.php?id='.($id > 0 ? $id : '__ID__');
+	    	if (empty($id) && (($action != 'add' && $action != 'create') || $cancel)){
+			$backtopage = $backurlforlist;
+		}
+    		else{
+			$backtopage = DOL_URL_ROOT.'/mrp/mo_card.php?id='.($id > 0 ? $id : '__ID__');
+		}
     	}
     }
     if ($cancel && ! empty($backtopageforcancel)) {
@@ -208,9 +215,12 @@ if ($action == 'create')
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.newToken().'">';
 	print '<input type="hidden" name="action" value="add">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
-
+	if ($backtopage){
+		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	}
+	if ($backtopageforcancel){
+		print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	}
 	dol_fiche_head(array(), '');
 
 	print '<table class="border centpercent tableforfieldcreate">'."\n";
@@ -312,9 +322,12 @@ if (($id || $ref) && $action == 'edit')
     print '<input type="hidden" name="token" value="'.newToken().'">';
 	print '<input type="hidden" name="action" value="update">';
 	print '<input type="hidden" name="id" value="'.$object->id.'">';
-	if ($backtopage) print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
-	if ($backtopageforcancel) print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
-
+	if ($backtopage){
+		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+	}
+	if ($backtopageforcancel){ 
+		print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	}
 	dol_fiche_head();
 
 	$object->fields['fk_bom']['disabled'] = 1;
@@ -374,7 +387,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		$text = $langs->trans('ConfirmValidateMo', $numref);
 		/*if (! empty($conf->notification->enabled))
-		 {
 		 require_once DOL_DOCUMENT_ROOT . '/core/class/notify.class.php';
 		 $notify = new Notify($db);
 		 $text .= '<br>';
@@ -388,7 +400,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			require_once DOL_DOCUMENT_ROOT.'/product/class/html.formproduct.class.php';
 			$formproduct = new FormProduct($db);
 			$forcecombo = 0;
-			if ($conf->browser->name == 'ie') $forcecombo = 1; // There is a bug in IE10 that make combo inside popup crazy
+			if ($conf->browser->name == 'ie'){
+				$forcecombo = 1; // There is a bug in IE10 that make combo inside popup crazy
+			}
 			$formquestion = array(
 			// 'text' => $langs->trans("ConfirmClone"),
 			// array('type' => 'checkbox', 'name' => 'clone_content', 'label' => $langs->trans("CloneMainAttributes"), 'value' => 1),
@@ -409,8 +423,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	// Call Hook formConfirm
 	$parameters = array('formConfirm' => $formconfirm, 'lineid' => $lineid);
 	$reshook = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	if (empty($reshook)) $formconfirm .= $hookmanager->resPrint;
-	elseif ($reshook > 0) $formconfirm = $hookmanager->resPrint;
+	if (empty($reshook)){
+		$formconfirm .= $hookmanager->resPrint;
+	}
+	elseif{
+		($reshook > 0) $formconfirm = $hookmanager->resPrint;
+	}
 
 	// Print form confirm
 	print $formconfirm;
@@ -423,7 +441,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	$morehtmlref = '<div class="refidno">';
 	/*
 	// Ref bis
-	$morehtmlref.=$form->editfieldkey("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->mrp->creer, 'string', '', 0, 1);
 	$morehtmlref.=$form->editfieldval("RefBis", 'ref_client', $object->ref_client, $object, $user->rights->mrp->creer, 'string', '', null, null, '', 1);*/
 	// Thirdparty
 	$morehtmlref .= $langs->trans('ThirdParty').' : '.(is_object($object->thirdparty) ? $object->thirdparty->getNomUrl(1) : '');
@@ -434,20 +451,21 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	    $morehtmlref .= '<br>'.$langs->trans('Project').' ';
 	    if ($permissiontoadd)
 	    {
-	        if ($action != 'classify')
+	        if ($action != 'classify'){
 	            $morehtmlref .= '<a class="editfielda" href="'.$_SERVER['PHP_SELF'].'?action=classify&amp;id='.$object->id.'">'.img_edit($langs->transnoentitiesnoconv('SetProject')).'</a> : ';
-            if ($action == 'classify') {
-                //$morehtmlref.=$form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->fk_soc, $object->fk_project, 'projectid', 0, 0, 1, 1);
+		}
+	if ($action == 'classify') {
                 $morehtmlref .= '<form method="post" action="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'">';
                 $morehtmlref .= '<input type="hidden" name="action" value="classin">';
                 $morehtmlref .= '<input type="hidden" name="token" value="'.newToken().'">';
                 $morehtmlref .= $formproject->select_projects($object->fk_soc, $object->fk_project, 'projectid', 0, 0, 1, 0, 1, 0, 0, '', 1);
                 $morehtmlref .= '<input type="submit" class="button valignmiddle" value="'.$langs->trans("Modify").'">';
                 $morehtmlref .= '</form>';
-            } else {
+            } 
+	else {
                 $morehtmlref .= $form->form_project($_SERVER['PHP_SELF'].'?id='.$object->id, $object->fk_soc, $object->fk_project, 'none', 0, 0, 0, 1);
 	        }
-	    } else {
+	else {
 	        if (!empty($object->fk_project)) {
 	            $proj = new Project($db);
 	            $proj->fetch($object->fk_project);
@@ -493,7 +511,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	if (!empty($object->table_element_line))
 	{
     	// Show object lines
-		//$result = $object->getLinesArray();
+
 		$object->fetchLines();
 
     	print '	<form name="addproduct" id="addproduct" action="'.$_SERVER["PHP_SELF"].'?id='.$object->id.(($action != 'editline') ? '#addline' : '#line_'.GETPOST('lineid', 'int')).'" method="POST">
@@ -503,7 +521,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     	<input type="hidden" name="id" value="' . $object->id.'">
     	';
 
-    	/*if (!empty($conf->use_javascript_ajax) && $object->status == 0) {
     	    include DOL_DOCUMENT_ROOT.'/core/tpl/ajaxrow.tpl.php';
     	}*/
 
@@ -525,7 +542,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     			$i = 0;
     			foreach($object->lines as $line) {
     				if ($line->role == 'toconsume') {
-    					if ($i) print ', ';
+    					if ($i){
+						print ', ';
+					}
     					$tmpproduct = new Product($db);
     					$tmpproduct->fetch($line->fk_product);
     					print $tmpproduct->getNomUrl(1);
@@ -567,14 +586,16 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	if ($action != 'presend' && $action != 'editline') {
     	print '<div class="tabsAction">'."\n";
+	}
     	$parameters = array();
     	$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-    	if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+    	if ($reshook < 0){
+		setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+	}
 
     	if (empty($reshook))
     	{
     	    // Send
-    		//if (empty($user->socid)) {
     		//	print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=presend&mode=init#formmailbeforetitle">' . $langs->trans('SendMail') . '</a>'."\n";
     		//}
 
@@ -583,7 +604,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     		{
 	    		if ($permissiontoadd)
 	    		{
-	    			// TODO Add test that production has not started
 	    			print '<a class="butAction" href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=confirm_setdraft&confirm=yes">'.$langs->trans("SetToDraft").'</a>';
 	    		}
     		}
